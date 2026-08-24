@@ -1,4 +1,4 @@
-# Week 4 In-Class Project: Data-Driven Portfolio Foundation
+# Week 5 In-Class Project: Data-Driven Portfolio Foundation
 
 ## Project Overview
 
@@ -17,11 +17,11 @@ By the end of this project, students will be able to:
 ## What You'll Build
 
 **Before (Week 3):** Static HTML with hardcoded content
-**After (Week 4):** Data-driven portfolio that generates content from JavaScript
+**After (Week 5):** Data-driven portfolio that generates content from JavaScript
 
 ### File Structure
 ```
-week4-portfolio/
+week5-portfolio/
 ├── index.html       # HTML structure with script tags
 ├── style.css        # CSS styling (built on Week 3)
 ├── data.js          # Portfolio data in objects/arrays
@@ -298,10 +298,8 @@ const profiles = [
 ## Next Steps (Future Weeks)
 
 This data-driven foundation prepares you for:
-- **Week 5**: Adding functions to organize your code better
-- **Week 6**: Using array methods (`map`, `filter`) for data manipulation
-- **Week 7**: Adding interactive elements and user interactions
-- **Week 8**: Rebuilding the same concepts as React components
+- **Week 6**: Functions, array methods (`map`, `filter`), and your first interactive elements - JS Basics II and DOM & Events are one combined week this term
+- **Week 7**: Rebuilding these same concepts as React components
 
 ## Resources
 
