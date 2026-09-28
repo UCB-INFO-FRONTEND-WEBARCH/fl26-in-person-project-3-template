@@ -127,7 +127,7 @@ projectsHTML = projectsHTML + '</div></section>';
 document.write(projectsHTML);
 ```
 
-### Phase 3: Enhanced Forms (15 minutes)
+### Phase 3: Enhanced Forms (10 minutes)
 
 #### Step 3.1: HTML5 Input Types
 Add various HTML5 inputs to your contact form:
@@ -267,33 +267,44 @@ Your portfolio should demonstrate:
 
 ## Extension Activities
 
-If you finish early, try these enhancements:
+If you finish the core early, these are not bonus-credit busywork. They are the same kind of thinking you did in the core, aimed at slightly less obvious problems. Work through the tiers in order and stop wherever your time runs out; nothing here is required to complete the project, and nothing here is graded either way. Tiers 1 and 2 use only tools we have already covered: `if`, indexed `for` loops, plain variables, arrays (including `.push()` to add an item), objects (including bracket notation), template literals, string comparison, `console.log`, and `JSON.stringify`. Tier 3 adds four string methods we have not used in class yet: `.toLowerCase()`, `.includes()`, `.indexOf()`, and `.slice()`; its hint says what each one returns. Nothing here needs a function declaration, an array method such as `map`/`filter`/`forEach`, `Object.keys`/`for...in`, a DOM API, or `fetch`. Those stay Week 6 and later.
 
-### Advanced Data Analysis
-```javascript
-// Count technologies across all projects
-let allTechs = [];
-for (let i = 0; i < portfolio.projects.length; i++) {
-    // Add logic to collect unique technologies
-}
-```
+### Tier 1 (about 10 to 15 minutes): do both
 
-### Conditional Display
-```javascript
-// Only show featured projects
-if (project.featured === true) {
-    // Add featured star or special styling
-}
-```
+**1. Make your display config-driven**
+- **Goal:** Let one variable at the top of `data.js` control which projects show up on the page.
+- **Done when:** changing `const showOnly = "JavaScript";` to a different technology (or to `"all"`) changes which project cards render, by wrapping your existing card-building code in a check rather than adding a second loop over your projects array (a small inner loop over one project's own technologies, to check for a match, is expected and is not what this rule bans), and a project shows up whenever ANY of its technologies matches, not only the first one listed. This only affects your main project-card loop; you do not need to touch the Phase 4.1 featured-project search for this task.
+- **Hint:** `data.js` and `display.js` load as separate `<script>` tags in `index.html`, in that order, so a `const` declared at the top level of `data.js` (which finishes running before `display.js`'s projects loop starts) is visible inside `display.js`. Inside your existing projects loop (substitute your own loop variable below: `project` if you declared one per iteration, or `projects[i]` if you index directly), before building each card, run a small inner check over that project's technologies: `let matches = false; for (let t = 0; t < project.technologies.length; t++) { if (project.technologies[t] === showOnly) { matches = true; } }` and then wrap the card-building code in `if (showOnly === "all" || matches) { ... }`. The comparison is case-sensitive, so `showOnly` has to match a technology's spelling and capitalization exactly (`"JavaScript"`, not `"javascript"`). A version that only checks `project.technologies[0]` will wrongly hide projects whose matching technology is not listed first; that is a bug, not a shortcut.
+- **Why it matters:** a single flag that changes what renders is the same pattern behind feature flags and A/B tests in production software.
 
-### Multiple Portfolios
-```javascript
-// Create data for different personas
-const profiles = [
-    { name: "Designer", skills: ["UI/UX", "Figma"] },
-    { name: "Developer", skills: ["JavaScript", "React"] }
-];
-```
+**2. Surface your most recent project**
+- **Goal:** Print a line to the console telling you which of your projects is the most recent.
+- **Done when:** your console shows the correct title even after you reorder the `projects` array in `data.js` (assuming no two of your projects share the exact same `completionDate`; a genuine tie is an edge case this task does not require handling).
+- **Hint:** Your starter `data.js` already gives every project a `completionDate: "YYYY-MM-DD"` field (Phase 4 uses the same project objects); if yours is missing one, add a date string to each project first. Track two "latest so far" variables outside your loop, `latestTitle` and `latestDate`; set both TO the first project's title and date before the loop starts (not to an empty string), then compare each later project's `completionDate` against `latestDate` and update both variables together whenever you find a later date. `completionDate` strings are `"YYYY-MM-DD"`, so comparing them directly with `>` gives the right answer with no new tools. If two projects genuinely tie on the exact same date, which one prints can depend on the array's order; that is fine, there is no required tie-break rule. Any clear console line works, e.g. `console.log("Most recent project: " + latestTitle);`.
+- **Why it matters:** "what is newest" is one of the most common real-world data questions; it is the logic behind every "last updated" line you have ever seen.
+
+### Tier 2 (about 15 to 20 minutes): pick one task, or do both if you have time; neither is required
+
+**3. Break technologies into tags, with a real count**
+- **Goal:** Show each technology as its own tag element on the page, plus one summary line per technology, also on the page, like "3 projects use JavaScript", whose number is computed from your data, not typed by hand.
+- **Done when:** the page shows individual `<span class="tag">` elements per technology (instead of one joined string) for every project; the page also shows one correct count line for every distinct technology, counted across ALL of your projects regardless of anything Tier 1's `showOnly` filter is currently hiding (the counts and the Tier 1 filter are independent; do not wire them together). One known limitation, matching the hint below: if the exact same technology name shows up twice inside one project's own `technologies` list (which your own data probably does not), that project gets counted twice for that technology; you do not need to fix that. Your starter `style.css` does not ship a `.tag` style, so add a simple one (a border, some padding, a small border-radius); the exact look is not graded. A count line reading "1 projects use CSS" for a count of one is fine; you do not need to handle singular/plural grammar.
+- **Hint:** You do not have `Object.keys` or `for...in` yet, so track counts with two parallel arrays instead of an object (a different, useful pattern from Task 4's grouped-object approach below; the two tasks are independent): `let techNames = []; let techCounts = [];`. For each project (outer loop, `i`), for each technology in that project's `technologies` array (inner loop, use a different variable like `j`; reusing `i` here overwrites your outer loop's counter and breaks it), search `techNames` with a third loop (another variable, e.g. `k`) to see if it is already there, tracking the position with a `foundIndex` variable that starts at `-1` and gets set when you find a match. If `foundIndex` stayed `-1`, `push` the name onto `techNames` and `push(1)` onto `techCounts`; otherwise add 1 to `techCounts[foundIndex]`. (If the same technology name shows up twice in one project's own list, this simple version double-counts it for that project, an edge case you likely will not hit with your own data.) For the tags themselves: inside your existing project-card loop, reuse that same inner `j` loop over the project's `technologies` array to build a string with `+=`, something like `let tagsHtml = ""; for (let j = 0; j < project.technologies.length; j++) { tagsHtml += "<span class='tag'>" + project.technologies[j] + "</span>"; }`, and `document.write()` that string in place of your old `.join(", ")` line. After all projects are rendered, loop over `techNames` with an indexed `for` and `document.write()` one line per technology: `` `${techCounts[i]} projects use ${techNames[i]}` ``.
+- **Why it matters:** tallying occurrences with parallel arrays (or a lookup object once you have one) is the core of every "most popular tag" or "top categories" feature you will build later.
+
+**4. Group your skills by category**
+- **Goal:** Show your skills grouped under headings (e.g. "Frontend", "Tools") instead of one flat list.
+- **Done when:** the page shows one heading per category, with only that category's skills listed underneath, and your Phase 2 skills-loop code has been updated to work with the new shape (you WILL need to change that existing code; that is expected, not something you broke).
+- **Hint:** In `data.js`, replace your existing top-level `skills: [...]` property with a new top-level `skillCategories: { Frontend: [...], Tools: [...] }` property (same shared data object, new property name and shape). Then declare `categoryNames` as its own separate top-level `const`, not a property inside that data object, e.g. `const categoryNames = ["Frontend", "Tools"];`. Yes, you will type each category name twice (once as a key in `skillCategories`, once in `categoryNames`); that is a known limitation of not having `Object.keys` yet, not a trick you are missing. Loop over `categoryNames` on the outside, and use bracket notation to get each inner array, matching whatever pattern you already use to reach your other data (if your Task 1 code reads `portfolio.projects`, use `portfolio.skillCategories[categoryNames[i]]`; if `data.js` instead declares separate top-level consts directly, use `skillCategories[categoryNames[i]]`). If a category name contains a space (e.g. `"Dev Tools"`), it still works as an object key; wrap it in quotes wherever you write it: `"Dev Tools": [...]`. If your existing skills are objects (e.g. `{ name, level }`) rather than plain strings, that is fine: group by assigning each skill's whole object under whichever category you pick; the grouping loop does not care what is inside each array element.
+- **Why it matters:** nested, grouped data, not flat lists, is what almost every real UI actually renders (categories, folders, playlists).
+
+### Tier 3 (about 15 to 25 minutes, a bounded search-and-highlight task): for the student who is still ahead
+
+**5. Build a search with highlight**
+- **Goal:** Add a search to your project cards. One variable at the top of `data.js`, `const query = "js";`, decides which projects render (the same hand-edited pattern as Tier 1's `showOnly`, not live typing), except it checks three fields (title, description, and every technology), ignores upper versus lower case, and marks where the match landed in each card's title.
+- **Done when:** changing `query` changes which cards render. A project matches when the query appears anywhere inside its title, its description, or any one of its technology strings, compared case-insensitively (`"js"` matches `"Node.js"` and `"JS Weather App"`; a bare `"JavaScript"` entry has no "js" in it, so it does not match). In each rendered card, the FIRST place the query appears in the title is wrapped in `<mark>...</mark>`, keeping the title's own original letters: `"JS Weather App"` renders as `<mark>JS</mark> Weather App`, and `"Home Weather JS Tracker"` renders as `Home Weather <mark>JS</mark> Tracker`. A project that matches only through its description or technologies still renders, with its title plain and no `<mark>` in it. `const query = "";` renders every project, none of them marked. The query check stacks on top of Tier 1's `showOnly` check: a card renders only when it passes both, so put the query check inside your existing card loop next to the `showOnly` check, before the card's HTML is written.
+- **Ceiling, stop here:** the title is the only thing that ever gets a `<mark>`, and only its first match, even if the query appears twice. No regular expressions. Treat `query === ""` as its own case up front and render every card plain; do not let it run through your matching code (`.includes("")` is always `true` and `.indexOf("")` is always `0`, which would print an empty `<mark></mark>` on every title).
+- **Hint:** Four string methods, four separate jobs. `.toLowerCase()` returns a lowercased copy and leaves the original alone; `"JS" === "js"` is `false`, so lowercase BOTH sides before every comparison. `.includes(text)` answers whether one string contains another (on a string this is a partial match; on an array it is an exact whole-element match, so check each technology string one at a time with a small inner loop, the same shape as Tier 1's). `.indexOf(text)` returns the position where the match starts, or `-1` if there is none. `.slice(start, end)` returns the characters from `start` up to but NOT including `end`. Split the work into two steps: first decide whether the project matches at all (three checks joined with `||`), then, only for a title that matched, find the position in the lowercased title and cut the ORIGINAL title into three pieces around it. Lowercasing never moves a character, so a position found in the lowercased copy is the same position in the original. Test with a match in the middle of a title, not only at the start; a version that works for `"JS Weather App"` but prints `Home Weather <mark></mark>` for the second example has a slice argument wrong.
+- **Why it matters:** search-with-highlight is the pattern behind every "showing results for..." page you have used; finding WHERE a match sits in a string, not only whether one exists, is what makes a highlight possible at all.
 
 ## Next Steps (Future Weeks)
 
